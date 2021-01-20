@@ -103,24 +103,21 @@ require_once 'conn.php'
         </div>
 
         <div style="height:auto; width:100%; border: 1px solid black; float: left">
-
-            <?php
-
-echo '<table class="table table-striped">
-      <tr>
-        <th> <font face="Arial">Id</font> </th>
-        <th> <font face="Arial">Name</font> </th>
-        <th> <font face="Arial">Province</font> </th>
-        <th> <font face="Arial">Price</font> </th>
-        <th> <font face="Arial">Quantity</font> </th>
-        <th> <font face="Arial">Supplier</font> </th>
-        <th> <font face="Arial">Visibility</font> </th>
-      </tr>';
+        
+<?php
+    echo '<table class="table table-striped">
+        <tr>
+            <th> <font face="Arial">Id</font> </th>
+            <th> <font face="Arial">Name</font> </th>
+            <th> <font face="Arial">Province</font> </th>
+            <th> <font face="Arial">Price</font> </th>
+            <th> <font face="Arial">Quantity</font> </th>
+            <th> <font face="Arial">Supplier</font> </th>
+            <th> <font face="Arial">Visibility</font> </th>
+        </tr>';
 
 $sql = "select * from fetch_all_ingredient()";
 $result = pg_query($db, $sql);
-//print_r($result);
-echo "<br/>";
 
 while ($row = pg_fetch_assoc($result)) {
     $visibility = ($row["is_hidden"] == "t") ? 'Hidden' : 'Show';
@@ -134,8 +131,6 @@ while ($row = pg_fetch_assoc($result)) {
                   <td>' . $row["supplier"] . '</td>
                   <td>' . $visibility . '</td>
               </tr>';
-
-    echo "<br/>";
 }
 
 // post data to database
@@ -161,13 +156,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 }
 
-pg_close($con);
+pg_close($db);
 ?>
 
             </table>
 
         </div>
     </div>
+
+    <script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
 
 </body>
 
