@@ -1,9 +1,6 @@
 <?php
-
-require_once 'conn.php'
-
+    require_once 'conn.php'
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,79 +9,121 @@ require_once 'conn.php'
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <title>Ingredients Table</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Ingredient Page</title>
 </head>
 
 <body>
 
-    <div class="container">
-        <div style=" width:100%; border: 1px solid black; margin-bottom : 10px; float : left">
+<?php
+    $single_row = null;
+    // post data to database
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ( isset( $_POST['submit'] ) ) {
+            var_dump(isset( $_POST['submit'] ));
+            $in_name = $_POST['in_name'];
+            $province = $_POST['province'];
+            $price = $_POST['price'];
+            $quantity = $_POST['quantity'];
+            $supplier = $_POST['supplier'];
+            $visible = $_POST['visible'];
+            $vis = ($visible == 0) ? false : true;
 
+            if ($visible == 1) {
+                $sql = "SELECT add_ingredient('$in_name', '$province', '$price', '$quantity', '$supplier', false)";
+            } else {
+                $sql = "SELECT add_ingredient('$in_name', '$province', '$price', '$quantity', '$supplier', true)";
+            }
+            $result = pg_query($db, $sql);
+        }
+
+        if(isset( $_POST['update'])) {
+            $id = $_POST['btn_update'];
+            $sql = "SELECT * FROM fetch_ingredient($id)";
+            $response = pg_query($db, $sql);
+            $single_row = pg_fetch_assoc($response);
+            
+
+        }
+        if(isset( $_POST['delete'])) {
+        }
+    }
+
+?>
+
+    <div class="container">
+        <div class = "col-md-12"><h2 style = "text-align: center">Ingredient Management</h2></div>
+        <div style=" width:100%; border: 1px solid black; margin-bottom : 10px; float : left">
             <form style="float : left" action="ingredient.php" method="post">
                 <div class="form-group">
                     <div class="row">
+                        <div class="col-md-12" style="margin: 10px"><u><h3>Ingredient Insertion</h3></u></div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
-                                <label for="in_name">Name</label>
+                                <label for="in_name">Ingredient Name</label>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-4">
                                 <input type="text" class="form-control" id="in_name" name="in_name"
-                                    placeholder="Enter Ingredient Name">
+                                    value="<?php echo $single_row["name"]; ?>" placeholder="Enter Ingredient Name">
                             </div>
+                            <div class="col-md-4"></div>
                         </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
-                                <label for="province">Province</label>
+                                <label for="province">Regional Provenance</label>
 
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-4">
                                 <input type="text" class="form-control" id="province" name="province"
-                                    placeholder="Enter Province Name">
+                                    value="<?php echo $single_row["province"]; ?>" placeholder="Enter Province Name">
                             </div>
+                            <div class="col-md-4"></div>
                         </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
                                 <label for="price">Price</label>
-
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-4">
                                 <input type="text" class="form-control" id="price" name="price"
-                                    placeholder="Enter Price">
+                                    value="<?php echo $single_row["price"]; ?>" placeholder="Enter Price">
                             </div>
+                            <div class="col-md-4" style="padding-top: 7px">€ / Quantity (in Stück)</div>
                         </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
-                                <label for="quantity">Quantity</label>
+                                <label for="quantity">Stock</label>
 
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-4">
                                 <input type="text" class="form-control" id="quantity" name="quantity"
-                                    placeholder="Enter Quantity">
+                                    value="<?php echo $single_row["quantity"]; ?>" placeholder="Enter Stock">
                             </div>
+                            <div class="col-md-4"></div>
                         </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
-                                <label for="supplier">Supplier</label>
+                                <label for="supplier">Supplier Name</label>
 
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-4">
                                 <input type="text" class="form-control" id="supplier" name="supplier"
-                                    placeholder="Enter Supplier Name">
+                                    value="<?php echo $single_row["supplier"]; ?>" placeholder="Enter Supplier Name">
                             </div>
+                            <div class="col-md-4"></div>
                         </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
                                 <label>Visibility</label>
                             </div>
                             <div class="col-md-4">
-                                <input class="form-check-input" type="radio" name="visible" id="visible" value=1>
+                                <input class="form-check-input" type="radio" name="visible" id="visible" value=1 <?php echo ($single_row["is_hidden"]=='f')?'checked':'' ?> >
                                 <label class="form-check-label" for="visible">
                                     Show
                                 </label>
 
                             </div>
                             <div class="col-md-4">
-                                <input class="form-check-input" type="radio" name="visible" id="visible" value=0>
+                                <input class="form-check-input" type="radio" name="visible" id="visible" value=0 <?php echo ($single_row["is_hidden"]=='t')?'checked':'' ?> >
                                 <label class="form-check-label" for="visible">
                                     Hidden
                                 </label>
@@ -103,7 +142,8 @@ require_once 'conn.php'
         </div>
 
         <div style="height:auto; width:100%; border: 1px solid black; float: left">
-        
+            <div class="col-md-12" ><u><h3>View Ingredient Details</h3></u></div>
+
 <?php
     echo '<table class="table table-striped">
         <tr>
@@ -114,62 +154,40 @@ require_once 'conn.php'
             <th> <font face="Arial">Quantity</font> </th>
             <th> <font face="Arial">Supplier</font> </th>
             <th> <font face="Arial">Visibility</font> </th>
+            <th> <font face="Arial">Update</font> </th>
+            <th> <font face="Arial">Delete</font> </th>
         </tr>';
 
-$sql = "select * from fetch_all_ingredient()";
-$result = pg_query($db, $sql);
-
-while ($row = pg_fetch_assoc($result)) {
-    $visibility = ($row["is_hidden"] == "t") ? 'Hidden' : 'Show';
-
-    echo '<tr>
-                  <td>' . $row["id"] . '</td>
-                  <td>' . $row["name"] . '</td>
-                  <td>' . $row["province"] . '</td>
-                  <td>' . $row["price"] . '</td>
-                  <td>' . $row["quantity"] . '</td>
-                  <td>' . $row["supplier"] . '</td>
-                  <td>' . $visibility . '</td>
-              </tr>';
-}
-
-// post data to database
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $in_name = $_POST['in_name'];
-    $province = $_POST['province'];
-    $price = $_POST['price'];
-    $quantity = $_POST['quantity'];
-    $supplier = $_POST['supplier'];
-    $visible = $_POST['visible'];
-    $vis = ($visible == 0) ? false : true;
-
-    if ($visible == 1) {
-        $sql = "SELECT add_ingredient('$in_name', '$province', '$price', '$quantity', '$supplier', false)";
-    } else {
-        $sql = "SELECT add_ingredient('$in_name', '$province', '$price', '$quantity', '$supplier', true)";
-    }
-
-    //$sql = "SELECT add_ingredient('$in_name', '$province', '$price', '$quantity', '$supplier', $vis)";
-    var_dump($sql);
+    $sql = "select * from fetch_all_ingredient()";
     $result = pg_query($db, $sql);
-    //var_dump($result);
-
-}
-
-pg_close($db);
-?>
+    while ($row = pg_fetch_assoc($result)) {
+        $visibility = ($row["is_hidden"] == "t") ? 'Hidden' : 'Show';
+?>  
+            <form method="post">
+                <tr>
+                    <td><?php echo $row["id"];?></td>
+                    <td><?php echo $row["name"];?></td>
+                    <td><?php echo $row["province"];?></td>
+                    <td><?php echo $row["price"];?></td>
+                    <td><?php echo $row["quantity"];?></td>
+                    <td><?php echo $row["supplier"];?></td>
+                    <td><?php echo $visibility;?></td>
+                    <input type="hidden" name="btn_update" value="<?php echo $row["id"];?>"/>
+                    <input type="hidden" name="btn_delete" value="<?php echo $row["id"];?>"/>
+                    <td><input type="submit" class="button btn btn-primary" name="update" value="Update"/></td>
+                    <td><input type="submit" class="button btn btn-primary" name="delete" value="Delete"/></td>
+                </tr>
+            </form>
+<?php } ?>
 
             </table>
-
         </div>
     </div>
 
     <script>
-    if ( window.history.replaceState ) {
-        window.history.replaceState( null, null, window.location.href );
-    }
-</script>
-
-</body>
-
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+    </body>
 </html>
