@@ -1,24 +1,18 @@
+<?php require_once 'conn.php';?>
+
 <!DOCTYPE html>
 <html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <body>
 
-    <h1>My first PHP page</h1>
-
-    <?php
-
-require_once 'conn.php';
-
-$sql = "select * from fetch_all_ingredient()";
-
-$result = pg_query($db, $sql);
-$row = pg_fetch_row($result);
-$res = $row[0];
-var_dump($row);
-
-echo $row[0];
-
-?>
+    <div>
+        <?php include_once './nav/nav.php'?>
+    </div>
 
 </body>
 
