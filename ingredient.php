@@ -52,12 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['delete'])) {
         $id = $_POST['btn_delete'];
         $sql = "SELECT * FROM delete_ingredient($id)";
-        return $sql;
+        $result = pg_query($db, $sql);
     }
 
 }
 
-//function to insert new supplier; only making sql query and returning the query as string
+//function to insert new ingredient; only making sql query and returning the query as string
 function insert_ingredient($in_name, $province, $price, $quantity, $supplier, $visible)
 {
     //checking visiblity and creating query depending on visibility
@@ -70,7 +70,7 @@ function insert_ingredient($in_name, $province, $price, $quantity, $supplier, $v
     return $sql;
 }
 
-//function to update existing supplier; only making sql query and returning the query as string
+//function to update existing ingredient; only making sql query and returning the query as string
 function update_ingredient($in_id, $in_name, $province, $price, $quantity, $supplier, $visible)
 {
     //checking visiblity and creating query depending on visibility
