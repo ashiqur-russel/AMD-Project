@@ -14,9 +14,14 @@
         <?php include_once './nav/nav.php'?>
     </div>
 
-    <?php
+<?php
 require_once 'conn.php';
 $single_row = null;
+
+//fetching all available supplier which are not hidden
+$sql = "SELECT * FROM fetch_available_supplier()";
+$supplier_list = pg_query($db, $sql);
+
 // post data to database
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //checking type of form posting; $_POST['submit'] means its called from New Entry form
@@ -145,11 +150,18 @@ function update_ingredient($in_id, $in_name, $province, $price, $quantity, $supp
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
                                 <label for="supplier">Supplier Name</label>
-
                             </div>
                             <div class="col-md-4">
-                                <input type="text" class="form-control" id="supplier" name="supplier"
-                                    value="<?php echo $single_row["supplier"]; ?>" placeholder="Enter Supplier Name">
+                                <select class="form-control" id="supplier" name="supplier">
+                                    <option selected="selected" disabled>Choose Supplier</option>
+                                    <?php                                    
+                                    // Iterating through the supplier array
+                                    while ($item = pg_fetch_assoc($supplier_list)){
+                                        $selected = ($item["name"] == $single_row["supplier"]) ? "selected" : "";
+                                        echo '<option value="' .$item["name"]. '"'.$selected.'>' . $item["name"] . '</option>';
+                                    }
+                                    ?>
+                                </select>
                             </div>
                             <div class="col-md-4"></div>
                         </div>

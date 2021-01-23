@@ -1,5 +1,3 @@
-<?php require_once 'conn.php';?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,7 +15,8 @@
         <?php include_once './nav/nav.php'?>
     </div>
 
-    <?php
+<?php
+require_once 'conn.php';
 $single_row = null;
 // check type of request
 // run only when POST method is called
@@ -138,7 +137,7 @@ function update_supplier($supplier_id, $supplier_name, $visible)
                     <h3>View Supplier Details</h3>
                 </u></div>
 
-            <?php
+<?php
 echo '<table class="table table-striped">
         <tr>
             <th> <font face="Arial">Id</font> </th>
