@@ -16,7 +16,9 @@
             <li <?php if (stripos($_SERVER['REQUEST_URI'], 'supplier.php') !== false) {echo 'class="active"';}?>>
                 <a class="nav-link" href="supplier.php">Supplier</a>
             </li>
-
+            <li <?php if (stripos($_SERVER['REQUEST_URI'], 'view_order.php') !== false) {echo 'class="active"';}?>>
+                <a class="nav-link" href="view_order.php">View Order</a>
+            </li>
         </ul>
     </div>
 </nav>

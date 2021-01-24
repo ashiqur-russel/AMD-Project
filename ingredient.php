@@ -185,7 +185,7 @@ function update_ingredient($in_id, $in_name, $province, $price, $quantity, $supp
                                 </label>
                             </div>
                         </div>
-                        <div class="col-md-12" style="margin: 10px;">
+                        <div class="col-md-12" style="margin: 10px; text-align: center">
                             <button style="margin-left: 40px;" type="submit" class="btn btn-primary"
                                 name="submit">Submit</button>
                         </div>
