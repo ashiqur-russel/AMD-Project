@@ -107,6 +107,16 @@ function update_supplier($supplier_id, $supplier_name, $visible)
                         </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
+                                <label for="ingredients">Ingredients</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="ingredients" name="ingredients"
+                                    value="<?php echo $single_row["ingredients"]; ?>" placeholder="Enter Ingredient Name">
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>
+                        <div class="col-md-12" style="margin: 10px">
+                            <div class="col-md-4">
                                 <label>Visibility</label>
                             </div>
                             <div class="col-md-4">
@@ -143,6 +153,7 @@ echo '<table class="table table-striped">
         <tr>
             <th> <font face="Arial">Id</font> </th>
             <th> <font face="Arial">Name</font> </th>
+            <th> <font face="Arial">Ingredients</font> </th>
             <th> <font face="Arial">Visibility</font> </th>
             <th> <font face="Arial">Update</font> </th>
             <th> <font face="Arial">Delete</font> </th>
@@ -159,6 +170,7 @@ while ($row = pg_fetch_assoc($result)) {
                 <tr>
                     <td><?php echo $row["id"]; ?></td>
                     <td><?php echo $row["name"]; ?></td>
+                    <td><?php echo $row["ingredients"]; ?></td>
                     <td><?php echo $visibility; ?></td>
                     <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
                     <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
