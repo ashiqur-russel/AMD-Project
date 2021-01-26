@@ -41,8 +41,8 @@
                                 <td><?php // echo $row["quantity"]; ?></td>
                                 <td><?php // echo $row["supplier"]; ?></td>
                                 <td><?php // echo $visibility; ?></td>
-                                <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
-                                <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
+                                <input type="hidden" name="btn_update" value="<?php //echo $row["id"]; ?>" />
+                                <input type="hidden" name="btn_delete" value="<?php //echo $row["id"]; ?>" />
                                 <td><input type="submit" class="button btn btn-primary" name="update" value="Update" /></td>
                                 <td><input type="submit" class="button btn btn-primary" name="delete" value="Delete" /></td>
                             </tr>
@@ -73,10 +73,10 @@
                                     <label for="province">Regional Provenance</label>
 
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-5">
                                     <input type="text" class="form-control" id="province" name="province" placeholder="Enter Province Name">
                                 </div>
-                                <div class="col-md-4"></div>
+                                <div class="col-md-3"></div>
                             </div>
                             <div class="col-md-12" style="margin: 10px">
                                 <div class="col-md-4">
@@ -89,7 +89,7 @@
                             </div>
                             <div class="col-md-12" style="margin: 10px">
                                 <div class="col-md-4">
-                                    <label for="quantity">Stock</label>
+                                    <label for="quantity">Quantity</label>
 
                                 </div>
                                 <div class="col-md-4">
@@ -120,16 +120,14 @@
                                     <label>Visibility</label>
                                 </div>
                                 <div class="col-md-4">
-                                    <input class="form-check-input" type="radio" name="visible" id="visible" value=1
-                                        <?php echo ($single_row["is_hidden"] == 'f') ? 'checked' : '' ?>>
+                                    <input class="form-check-input" type="radio" name="visible" id="visible" value=1>
                                     <label class="form-check-label" for="visible">
                                         Show
                                     </label>
 
                                 </div>
                                 <div class="col-md-4">
-                                    <input class="form-check-input" type="radio" name="visible" id="visible" value=0
-                                        <?php echo ($single_row["is_hidden"] == 't') ? 'checked' : '' ?>>
+                                    <input class="form-check-input" type="radio" name="visible" id="visible" value=0>
                                     <label class="form-check-label" for="visible">
                                         Hidden
                                     </label>

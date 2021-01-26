@@ -27,19 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //checking type of form posting; $_POST['submit'] means its called from New Entry form
     if (isset($_POST['submit'])) {
         $in_name = $_POST['in_name'];
-        $province = $_POST['province'];
-        $price = $_POST['price'];
-        $quantity = $_POST['quantity'];
-        $supplier = $_POST['supplier'];
-        $visible = $_POST['visible'];
 
         //checking if supplier id is present; if present we have to update the existing; if not insert new supplier
         if (empty($_POST['ingredient_id'])) {
             //calling insert function and returning the sql string
-            $sql = insert_ingredient($in_name, $province, $price, $quantity, $supplier, $visible);
+            $sql = insert_ingredient($in_name);
         } else {
             //calling update function and returning the sql string
-            $sql = update_ingredient($_POST['ingredient_id'], $in_name, $province, $price, $quantity, $supplier, $visible);
+            $sql = update_ingredient($_POST['ingredient_id'], $in_name);
         }
         //performing sql query and returning result
         $result = pg_query($db, $sql);
@@ -63,27 +58,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 //function to insert new ingredient; only making sql query and returning the query as string
-function insert_ingredient($in_name, $province, $price, $quantity, $supplier, $visible)
+function insert_ingredient($in_name)
 {
     //checking visiblity and creating query depending on visibility
-    if ($visible == 1) {
-        $sql = "SELECT add_ingredient('$in_name', '$province', '$price', '$quantity', '$supplier', false)";
-    } else {
-        $sql = "SELECT add_ingredient('$in_name', '$province', '$price', '$quantity', '$supplier', true)";
-    }
-
+    $sql = "SELECT add_ingredient('$in_name')";
     return $sql;
 }
 
 //function to update existing ingredient; only making sql query and returning the query as string
-function update_ingredient($in_id, $in_name, $province, $price, $quantity, $supplier, $visible)
+function update_ingredient($in_id, $in_name)
 {
     //checking visiblity and creating query depending on visibility
-    if ($visible == 1) {
-        $sql = "SELECT update_ingredient('$in_id', '$in_name', '$province', '$price', '$quantity', '$supplier', false)";
-    } else {
-        $sql = "SELECT update_ingredient('$in_id', '$in_name', '$province', '$price', '$quantity', '$supplier', true)";
-    }
+    $sql = "SELECT update_ingredient('$in_id', '$in_name')";
     return $sql;
 
 }
@@ -144,11 +130,15 @@ $sql = "select * from fetch_all_ingredient()";
 $result = pg_query($db, $sql);
 while ($row = pg_fetch_assoc($result)) {
     ?>
-            <form method="post" action="ingredient_details.php">
+            <form method="post">
                 <tr>
                     <td><?php echo $row["id"]; ?></td>
                     <td><?php echo $row["name"]; ?></td>
-                    <td><input type="submit" class="button btn btn-primary" name="manage" value="Manage" /></td>
+                    <td><input type="button" class="button btn btn-primary" name="manage" onClick="window.location='ingredient_details.php';" value="Manage"></td>
+                    <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
+                    <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
+                    <td><input type="submit" class="button btn btn-primary" name="update" value="Update" /></td>
+                    <td><input type="submit" class="button btn btn-primary" name="delete" value="Delete" /></td>
                 </tr>
             </form>
             <?php }?>

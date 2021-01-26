@@ -25,15 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //checking type of form posting; $_POST['submit'] means its called from New Entry form
     if (isset($_POST['submit'])) {
         $supplier_name = $_POST['supplier_name'];
+        $ingredients = $_POST['ingredients'];
         $visible = $_POST['visible'];
 
         //checking if supplier id is present; if present we have to update the existing; if not insert new supplier
         if (empty($_POST['supplier_id'])) {
             //calling insert function and returning the sql string
-            $sql = insert_supplier($supplier_name, $visible);
+            $sql = insert_supplier($supplier_name, $ingredients, $visible);
         } else {
             //calling update function and returning the sql string
-            $sql = update_supplier($_POST['supplier_id'], $supplier_name, $visible);
+            $sql = update_supplier($_POST['supplier_id'], $supplier_name, $ingredients, $visible);
         }
         //performing sql query and returning result
         $result = pg_query($db, $sql);
@@ -56,25 +57,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 //function to insert new supplier; only making sql query and returning the query as string
-function insert_supplier($supplier_name, $visible)
+function insert_supplier($supplier_name, $ingredients, $visible)
 {
     //checking visiblity and creating query depending on visibility
     if ($visible == 1) {
-        $sql = "SELECT add_supplier('$supplier_name', false)";
+        $sql = "SELECT add_supplier('$supplier_name', '$ingredients', false)";
     } else {
-        $sql = "SELECT add_supplier('$supplier_name', true)";
+        $sql = "SELECT add_supplier('$supplier_name', '$ingredients', true)";
     }
     return $sql;
 }
 
 //function to update existing supplier; only making sql query and returning the query as string
-function update_supplier($supplier_id, $supplier_name, $visible)
+function update_supplier($supplier_id, $supplier_name, $ingredients, $visible)
 {
     //checking visiblity and creating query depending on visibility
     if ($visible == 1) {
-        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', false)";
+        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', '$ingredients', false)";
     } else {
-        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', true)";
+        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', '$ingredients', true)";
     }
     return $sql;
 }
