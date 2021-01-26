@@ -24,15 +24,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //checking type of form posting; $_POST['submit'] means its called from New Entry form
     if (isset($_POST['submit'])) {
         $supplier_name = $_POST['supplier_name'];
+        $ingredients = $_POST['ingredients'];
         $visible = $_POST['visible'];
 
         //checking if supplier id is present; if present we have to update the existing; if not insert new supplier
         if (empty($_POST['supplier_id'])) {
             //calling insert function and returning the sql string
-            $sql = insert_supplier($supplier_name, $visible);
+            $sql = insert_supplier($supplier_name, $ingredients, $visible);
         } else {
             //calling update function and returning the sql string
-            $sql = update_supplier($_POST['supplier_id'], $supplier_name, $visible);
+            $sql = update_supplier($_POST['supplier_id'], $supplier_name, $ingredients, $visible);
         }
         //performing sql query and returning result
         $result = pg_query($db, $sql);
@@ -55,25 +56,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 //function to insert new supplier; only making sql query and returning the query as string
-function insert_supplier($supplier_name, $visible)
+function insert_supplier($supplier_name, $ingredients, $visible)
 {
     //checking visiblity and creating query depending on visibility
     if ($visible == 1) {
-        $sql = "SELECT add_supplier('$supplier_name', false)";
+        $sql = "SELECT add_supplier('$supplier_name', '$ingredients', false)";
     } else {
-        $sql = "SELECT add_supplier('$supplier_name', true)";
+        $sql = "SELECT add_supplier('$supplier_name', '$ingredients', true)";
     }
     return $sql;
 }
 
 //function to update existing supplier; only making sql query and returning the query as string
-function update_supplier($supplier_id, $supplier_name, $visible)
+function update_supplier($supplier_id, $supplier_name, $ingredients, $visible)
 {
     //checking visiblity and creating query depending on visibility
     if ($visible == 1) {
-        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', false)";
+        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', '$ingredients', false)";
     } else {
-        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', true)";
+        $sql = "SELECT update_supplier('$supplier_id', '$supplier_name', '$ingredients', true)";
     }
     return $sql;
 }
@@ -101,6 +102,16 @@ function update_supplier($supplier_id, $supplier_name, $visible)
                             <div class="col-md-4">
                                 <input type="text" class="form-control" id="supplier_name" name="supplier_name"
                                     value="<?php echo $single_row["name"]; ?>" placeholder="Enter Supplier Name">
+                            </div>
+                            <div class="col-md-4"></div>
+                        </div>
+                        <div class="col-md-12" style="margin: 10px">
+                            <div class="col-md-4">
+                                <label for="ingredients">Ingredients</label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="ingredients" name="ingredients"
+                                    value="<?php echo $single_row["ingredients"]; ?>" placeholder="Enter Ingredient Name">
                             </div>
                             <div class="col-md-4"></div>
                         </div>
@@ -142,6 +153,7 @@ echo '<table class="table table-striped">
         <tr>
             <th> <font face="Arial">Id</font> </th>
             <th> <font face="Arial">Name</font> </th>
+            <th> <font face="Arial">Ingredients</font> </th>
             <th> <font face="Arial">Visibility</font> </th>
             <th> <font face="Arial">Update</font> </th>
             <th> <font face="Arial">Delete</font> </th>
@@ -158,6 +170,7 @@ while ($row = pg_fetch_assoc($result)) {
                 <tr>
                     <td><?php echo $row["id"]; ?></td>
                     <td><?php echo $row["name"]; ?></td>
+                    <td><?php echo $row["ingredients"]; ?></td>
                     <td><?php echo $visibility; ?></td>
                     <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
                     <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
