@@ -51,6 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //performing delete operation of the seleted ingredient
     if (isset($_POST['delete'])) {
         $id = $_POST['btn_delete'];
+
+        $sql = "SELECT * FROM delete_ing_detail_by_ing_id($id)";
+        $result = pg_query($db, $sql);
+
         $sql = "SELECT * FROM delete_ingredient($id)";
         $result = pg_query($db, $sql);
     }

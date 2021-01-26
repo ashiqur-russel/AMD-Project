@@ -47,6 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = update_detail($ing_detail_id, $u_price, $u_visibility);
         $result = pg_query($db, $sql);
     }
+    if(isset($_POST['restock'])) {
+        $ing_detail_id = $_POST['ing_detail_id'];
+        $updated_supplier = $_POST['updated_supplier'];
+        $updated_quantity = $_POST['updated_quantity'];
+        $sql = "SELECT * FROM restock_ingredient($ing_detail_id, '$updated_supplier', $updated_quantity)";
+        $result = pg_query($db, $sql);
+    }
     //performing delete operation of the seleted ingredient
     if (isset($_POST['delete'])) {
         $id = $_POST['btn_delete'];
@@ -138,6 +145,10 @@ function update_detail($id, $price, $visibility)
                                                     <div >
                                                         <div class="row">
                                                             <div class="col-md-12" style="margin: 10px">
+                                                                <div class="col-md-4" style="display:none">
+                                                                    <input type="hidden" class="form-control" id="ing_detail_id" name="ing_detail_id"
+                                                                        value="<?php echo $row["id"]; ?>">
+                                                                </div>
                                                                 <div class="col-md-4">
                                                                     <label for="updated_supplier">Supplier Name</label>
                                                                 </div>
@@ -169,7 +180,7 @@ function update_detail($id, $price, $visibility)
                                                                 <div class="col-md-4"></div>
                                                             </div>
                                                             <div class="col-md-12 modal-footer">
-                                                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Submit</button>
+                                                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="restock">Submit</button>
                                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                                             </div>
                                                         </div>
@@ -234,6 +245,8 @@ function update_detail($id, $price, $visibility)
                                                             </div>
                                                         </div>
                                                     </form>
+                                                </div>
+                                                <div class="modal-footer">
                                                 </div>
                                             </div>
                                         </div>
