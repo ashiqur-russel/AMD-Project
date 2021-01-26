@@ -1,5 +1,3 @@
-<?php require_once 'conn.php';?>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -19,7 +17,6 @@
 require_once 'conn.php';
 $ing_id = $_GET['ing_id'];
 $ing_name = $_GET['ing_name'];
-$ing_detail_id = isset($_GET['id']) ? $_GET['id'] : '';
 
 $single_row = null;
 
@@ -43,20 +40,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         $result = pg_query($db, $sql);
     }
-    if(isset($_POST['open_modal'])) {
-        $id = $_POST['btn_update'];
-        $ing_detail_id = $id;
-        echo "<script>$(document).ready(function(){
-            $('#myModalUpdate').modal('show')
-         });</script>";
-    }
     if(isset($_POST['update'])) {
-        var_dump($ing_detail_id);
+        $ing_detail_id = $_POST['ing_detail_id'];
         $u_price = $_POST['updated_price'];
         $u_visibility = $_POST['updated_visibility'];
         $sql = update_detail($ing_detail_id, $u_price, $u_visibility);
         $result = pg_query($db, $sql);
-
     }
     //performing delete operation of the seleted ingredient
     if (isset($_POST['delete'])) {
@@ -127,11 +116,129 @@ function update_detail($id, $price, $visibility)
                                 <td><?php  echo $row["quantity"]; ?></td>
                                 <td><?php  echo $row["supplier"]; ?></td>
                                 <td><?php  echo $display; ?></td>
-                                <td><button type="button" class="button btn btn-primary" data-toggle="modal" data-target="#myModalRestock">Restock</button></td>
-                                <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
-                                <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
-                                <td><button type="submit" class="button btn btn-primary" name="open_modal" data-toggle="modal" data-target="#myModalUpdate">Update</button></td>
-                                <td><input type="submit" class="button btn btn-primary" name="delete" value="Delete" /></td>
+                                <td>
+                                    <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
+                                    <input type="submit" class="button btn btn-primary" id="delete" name="delete" value="Delete" />
+                                </td>
+                                <td>
+                                    <button type="button" class="button btn btn-primary" data-toggle="modal" data-target="#restockModal<?php echo $row["id"]; ?>">Restock</button>
+
+                                    <!-- Modal for Restock ingredient quantity -->
+                                    <div id="restockModal<?php echo $row["id"]; ?>" class="modal fade" role="dialog">
+                                        <div class="modal-dialog">
+
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">Restock Quantity</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form class="form-group" style="float : left; margin: 10px" action="#" method="post">
+                                                    <div >
+                                                        <div class="row">
+                                                            <div class="col-md-12" style="margin: 10px">
+                                                                <div class="col-md-4">
+                                                                    <label for="updated_supplier">Supplier Name</label>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <select class="form-control" id="updated_supplier" name="updated_supplier">
+                                                                        <option selected="selected" disabled>Choose Supplier</option>
+                                                                        <?php
+                                                                        //fetching all available supplier which are not hidden
+                                                                        $sql = "SELECT * FROM fetch_supplier_by_ingredient('$ing_name')";
+                                                                        $supplier_list = pg_query($db, $sql);                              
+                                                                        // Iterating through the supplier array
+                                                                        while ($item = pg_fetch_assoc($supplier_list)){
+                                                                            $selected = ($item["name"] == $single_row["updated_supplier"]) ? "selected" : "";
+                                                                            echo '<option value="' .$item["name"]. '"'.$selected.'>' . $item["name"] . '</option>';
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-4"></div>
+                                                            </div>
+                                                            <div class="col-md-12" style="margin: 10px">
+                                                                <div class="col-md-4">
+                                                                    <label for="quantity">Quantity</label>
+
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <input type="text" class="form-control" id="updated_quantity" name="updated_quantity" placeholder="Enter Stock">
+                                                                </div>
+                                                                <div class="col-md-4"></div>
+                                                            </div>
+                                                            <div class="col-md-12 modal-footer">
+                                                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Submit</button>
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="button btn btn-primary" data-toggle="modal" data-target="#updateModal<?php echo $row["id"];?>">Update</button>
+
+                                    <!-- Modal for Update ingredient Price, Supplier & Visibility -->
+                                    <div id="updateModal<?php echo $row["id"];?>" class="modal fade" role="dialog">
+                                        <div class="modal-dialog">
+
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    <h4 class="modal-title">Update Ingredient Details</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form class="form-group" style="float : left; margin: 10px" action="#" method="post">
+                                                        <div >
+                                                            <div class="row">
+                                                                <div class="col-md-12" style="margin: 10px">
+                                                                    <div class="col-md-4" style="display:none">
+                                                                        <input type="hidden" class="form-control" id="ing_detail_id" name="ing_detail_id"
+                                                                            value="<?php echo $row["id"]; ?>">
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <label for="price">Price</label>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <input type="text" class="form-control" id="updated_price" name="updated_price" placeholder="Enter Price">
+                                                                    </div>
+                                                                    <div class="col-md-4" style="padding-top: 7px">€ / Quantity (in Stück)</div>
+                                                                </div>
+                                                                <div class="col-md-12" style="margin: 10px">
+                                                                    <div class="col-md-4">
+                                                                        <label>Visibility</label>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <input class="form-check-input" type="radio" name="updated_visibility" id="updated_visibility" value=1
+                                                                            <?php echo ($display == 'Show') ? 'checked' : '' ?>>
+                                                                        <label class="form-check-label" for="visible">Show</label>
+                                                                    </div>
+                                                                    <div class="col-md-4">
+                                                                        <input class="form-check-input" type="radio" name="updated_visibility" id="updated_visibility" value=0
+                                                                            <?php echo ($display == 'Hidden') ? 'checked' : '' ?>>
+                                                                        <label class="form-check-label" for="visible">Hidden</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-12 modal-footer">
+                                                                    <button style="margin-left: 40px;" type="submit" class="btn btn-primary" id="update" name="update">Update</button>
+                                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
                         </form>
                     <?php }?>
@@ -218,120 +325,6 @@ function update_detail($id, $price, $visibility)
                             </div>
                             <div class="col-md-12 modal-footer">
                                 <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Submit</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-            </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- Modal for Restock ingredient quantity -->
-        <div id="myModalRestock" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Restock Quantity</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-group" style="float : left; margin: 10px" action="ingredient_details.php?ing_id=<?php echo $ing_id; ?>&ing_name=<?php echo $ing_name; ?>" method="post">
-                    <div >
-                        <div class="row">
-                            <div class="col-md-12" style="margin: 10px">
-                                <div class="col-md-4">
-                                    <label for="supplier">Supplier Name</label>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-control" id="supplier" name="supplier">
-                                        <option selected="selected" disabled>Choose Supplier</option>
-                                        <?php
-                                        //fetching all available supplier which are not hidden
-                                        $sql = "SELECT * FROM fetch_supplier_by_ingredient('$ing_name')";
-                                        $supplier_list = pg_query($db, $sql);                              
-                                        // Iterating through the supplier array
-                                        while ($item = pg_fetch_assoc($supplier_list)){
-                                            $selected = ($item["name"] == $single_row["supplier"]) ? "selected" : "";
-                                            echo '<option value="' .$item["name"]. '"'.$selected.'>' . $item["name"] . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                </div>
-                                <div class="col-md-4"></div>
-                            </div>
-                            <div class="col-md-12" style="margin: 10px">
-                                <div class="col-md-4">
-                                    <label for="quantity">Quantity</label>
-
-                                </div>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" id="quantity" name="quantity" placeholder="Enter Stock">
-                                </div>
-                                <div class="col-md-4"></div>
-                            </div>
-                            <div class="col-md-12 modal-footer">
-                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Submit</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-            </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- Modal for Update ingredient Price, Supplier & Visibility -->
-        <div id="myModalUpdate" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Update Ingredient Details</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-group" style="float : left; margin: 10px" action="ingredient_details.php?ing_id=<?php echo $ing_id; ?>&ing_name=<?php echo $ing_name; ?>&id=<?php echo $ing_detail_id; ?>" method="post">
-                    <div >
-                        <div class="row">
-                            <div class="col-md-12" style="margin: 10px">
-                                <div class="col-md-4">
-                                    <label for="price">Price</label>
-                                </div>
-                                <div class="col-md-4">
-                                    <input type="text" class="form-control" id="updated_price" name="updated_price" placeholder="Enter Price">
-                                </div>
-                                <div class="col-md-4" style="padding-top: 7px">€ / Quantity (in Stück)</div>
-                            </div>
-                            <div class="col-md-12" style="margin: 10px">
-                                <div class="col-md-4">
-                                    <label>Visibility</label>
-                                </div>
-                                <div class="col-md-4">
-                                    <input class="form-check-input" type="radio" name="updated_visibility" id="updated_visibility" value=1>
-                                    <label class="form-check-label" for="visible">
-                                        Show
-                                    </label>
-
-                                </div>
-                                <div class="col-md-4">
-                                    <input class="form-check-input" type="radio" name="updated_visibility" id="updated_visibility" value=0>
-                                    <label class="form-check-label" for="visible">
-                                        Hidden
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-12 modal-footer">
-                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="update">Update</button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
