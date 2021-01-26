@@ -134,7 +134,8 @@ while ($row = pg_fetch_assoc($result)) {
                 <tr>
                     <td><?php echo $row["id"]; ?></td>
                     <td><?php echo $row["name"]; ?></td>
-                    <td><input type="button" class="button btn btn-primary" name="manage" onClick="window.location='ingredient_details.php';" value="Manage"></td>
+                    <td><a type="button" class="button btn btn-primary" 
+                        href="ingredient_details.php?ing_id=<?php echo $row["id"]; ?>&ing_name=<?php echo $row["name"]; ?>">Manage</a></td>
                     <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
                     <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
                     <td><input type="submit" class="button btn btn-primary" name="update" value="Update" /></td>

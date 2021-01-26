@@ -14,6 +14,52 @@
         <div>
             <?php include_once './nav/nav.php'?>
         </div>
+
+<?php 
+require_once 'conn.php';
+$ing_id = $_GET['ing_id'];
+$ing_name = $_GET['ing_name'];
+
+$single_row = null;
+
+//fetching all available supplier which are not hidden
+$sql = "SELECT * FROM fetch_supplier_by_ingredient('$ing_name')";
+$supplier_list = pg_query($db, $sql);
+
+// post data to database
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    //checking type of form posting; $_POST['submit'] means its called from New Entry form
+    if (isset($_POST['submit'])) {
+        $province = $_POST['province'];
+        $price = $_POST['price'];
+        $quantity = $_POST['quantity'];
+        $supplier = $_POST['supplier'];
+        $visibility = $_POST['visiblility'];
+        //checking if supplier id is present; if present we have to update the existing; if not insert new supplier
+        if (empty($_POST['ing_detail_id'])) {
+            //calling insert function and returning the sql string
+            $sql = insert_detail($ing_id, $province, $price, $quantity, $supplier, $visibility);
+        }
+        $result = pg_query($db, $sql);
+    }
+}
+
+//function to insert new ingredient; only making sql query and returning the query as string
+function insert_detail($ing_id, $province, $price, $quantity, $supplier, $visibility)
+{
+    if($visibility == 1) {
+        //checking visiblity and creating query depending on visibility
+        $sql = "SELECT add_ingredient_detail($ing_id, '$province', $price, $quantity, '$supplier', false)";
+    } else {
+        //checking visiblity and creating query depending on visibility
+        $sql = "SELECT add_ingredient_detail($ing_id, '$province', $price, $quantity, '$supplier', true)";
+    }
+    
+    return $sql;
+}
+
+?>
+
         <div class="container">
             <div class="col-md-12">
                 <div class="col-md-9" style="float: left"><h2 style="text-align: right; padding-right: 50px">View Ingredient Details List</h2></div>
@@ -24,7 +70,7 @@
 
                 <table class="table table-striped">
                     <tr>
-                        <th> <font face="Arial">Provenance Id</font> </th>
+                        <th> <font face="Arial">Id</font> </th>
                         <th> <font face="Arial">Provenance</font> </th>
                         <th> <font face="Arial">Price</font> </th>
                         <th> <font face="Arial">Quantity</font> </th>
@@ -32,22 +78,28 @@
                         <th> <font face="Arial">Visibility</font> </th>
                         <th> <font face="Arial">Action</font> </th>
                     </tr>
-                        <!-- <form method="post">
+                    <?php
+                    $sql = "select * from fetch_ingredient_detail($ing_id)";
+                    $result = pg_query($db, $sql);
+                    while ($row = pg_fetch_assoc($result)) {
+                        $display = ($row["is_hidden"] == "t") ? 'Hidden' : 'Show';
+                    ?>
+                        <form method="post">
                             <tr>
-                                <td><?php // echo $row["id"]; ?></td>
-                                <td><?php // echo $row["name"]; ?></td>
-                                <td><?php // echo $row["province"]; ?></td>
-                                <td><?php // echo $row["price"]; ?></td>
-                                <td><?php // echo $row["quantity"]; ?></td>
-                                <td><?php // echo $row["supplier"]; ?></td>
-                                <td><?php // echo $visibility; ?></td>
-                                <input type="hidden" name="btn_update" value="<?php //echo $row["id"]; ?>" />
-                                <input type="hidden" name="btn_delete" value="<?php //echo $row["id"]; ?>" />
+                                <td><?php  echo $row["id"]; ?></td>
+                                <td><?php  echo $row["province"]; ?></td>
+                                <td><?php  echo $row["price"]; ?></td>
+                                <td><?php  echo $row["quantity"]; ?></td>
+                                <td><?php  echo $row["supplier"]; ?></td>
+                                <td><?php  echo $display; ?></td>
+                                <td><input type="submit" class="button btn btn-primary" name="restock" value="Restock" /></td>
+                                <input type="hidden" name="btn_update" value="<?php echo $row["ing_detail_id"]; ?>" />
+                                <input type="hidden" name="btn_delete" value="<?php echo $row["ing_detail_id"]; ?>" />
                                 <td><input type="submit" class="button btn btn-primary" name="update" value="Update" /></td>
                                 <td><input type="submit" class="button btn btn-primary" name="delete" value="Delete" /></td>
                             </tr>
-                        </form> -->
-
+                        </form>
+                    <?php }?>
                 </table>
             </div>
         </div>
@@ -62,16 +114,12 @@
                 <h4 class="modal-title">Ingredient Insertion</h4>
             </div>
             <div class="modal-body">
-                <form style="float : left; margin: 10px" action="ingredient.php" method="post">
-                    <div class="form-group">
+                <form class="form-group" style="float : left; margin: 10px" action="ingredient_details.php?ing_id=<?php echo $ing_id; ?>&ing_name=<?php echo $ing_name; ?>" method="post">
+                    <div >
                         <div class="row">
-                            <div class="col-md-4" style="display:none">
-                                <input type="hidden" class="form-control" id="ingredient_id" name="ingredient_id">
-                            </div>
                             <div class="col-md-12" style="margin: 10px">
                                 <div class="col-md-4">
                                     <label for="province">Regional Provenance</label>
-
                                 </div>
                                 <div class="col-md-5">
                                     <input type="text" class="form-control" id="province" name="province" placeholder="Enter Province Name">
@@ -120,35 +168,31 @@
                                     <label>Visibility</label>
                                 </div>
                                 <div class="col-md-4">
-                                    <input class="form-check-input" type="radio" name="visible" id="visible" value=1>
+                                    <input class="form-check-input" type="radio" name="visiblility" id="visiblility" value=1>
                                     <label class="form-check-label" for="visible">
                                         Show
                                     </label>
 
                                 </div>
                                 <div class="col-md-4">
-                                    <input class="form-check-input" type="radio" name="visible" id="visible" value=0>
+                                    <input class="form-check-input" type="radio" name="visiblility" id="visiblility" value=0>
                                     <label class="form-check-label" for="visible">
                                         Hidden
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md-12" style="margin: 10px; text-align: center">
-                                
+                            <div class="col-md-12 modal-footer">
+                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Submit</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Submit</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
             </div>
-
         </div>
         </div>
     </body>
-
 </html>
-
