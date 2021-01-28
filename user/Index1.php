@@ -18,23 +18,23 @@
         $sql = "SELECT * FROM fetch_all_pizza()";
         $pizza_list = pg_query($db, $sql);
 
-        //fetching all available ingredients to show the ingredients detail in user UI
-        $sql_ing = "SELECT * FROM fetch_available_ingredient()";
-        $ava_ingredient_list = pg_query($db, $sql_ing);
+        // //fetching all available ingredients to show the ingredients detail in user UI
+        // $sql_ing = "SELECT * FROM fetch_available_ingredient()";
+        // $ava_ingredient_list = pg_query($db, $sql_ing);
 
-        // fetching pizza and price based on pizza size
-        if (isset($_POST['pizza_select'])) {
-            $pizza_size = $_POST['pizzaSize'];
-            $sql = "SELECT * FROM fetch_single_pizza('$pizza_size')";
-            $result = pg_query($db, $sql);
-        }
+        // // fetching pizza and price based on pizza size
+        // if (isset($_POST['pizza_select'])) {
+        //     $pizza_size = $_POST['pizzaSize'];
+        //     $sql = "SELECT * FROM fetch_single_pizza('$pizza_size')";
+        //     $result = pg_query($db, $sql);
+        // }
 
-        // fetching regional provenance based on ingredient name
-        if (isset($_POST['ingredient_select'])) {
-            $ingredient_name = $_POST['ingredient_name'];
-            $sql = "SELECT * FROM fetch_available_regionalprovenance('$ingredient_name')";
-            $result = pg_query($db, $sql);
-        }
+        // // fetching regional provenance based on ingredient name
+        // if (isset($_POST['ingredient_select'])) {
+        //     $ingredient_name = $_POST['ingredient_name'];
+        //     $sql = "SELECT * FROM fetch_available_regionalprovenance('$ingredient_name')";
+        //     $result = pg_query($db, $sql);
+        // }
 
     ?>
         <div class="container">
@@ -62,7 +62,7 @@
                             <div class="col-md-4" style="padding-top: 7px">cm</div>
                         </div>
                         <div class="col-md-12" style="margin: 10px; text-align: center">
-                            <button style="margin-left: 35px;" type="submit" class="btn btn-primary"
+                            <button style="margin-left: 35px;" type="button" class="btn btn-primary"
                                     name="pizza_select">Select</button>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <button style="margin-left: 30px;" type="submit" class="btn btn-primary"
+                                <button style="margin-left: 30px;" type="button" class="btn btn-primary"
                                     name="ingredient_select">Select</button>
                             </div>
                         </div>
@@ -108,7 +108,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <button style="margin-left: 30px;" type="submit" class="btn btn-primary"
+                                <button style="margin-left: 30px;" type="button" class="btn btn-primary"
                                     name="submit">Select</button>
                             </div>
                         </div>
@@ -134,7 +134,7 @@
                         </div>
                         <div class="col-md-12" style="margin: 10px; text-align: center">
                             <button style="width: 80px" type="submit" class="btn btn-primary"
-                                name="submit">Ok</button>
+                                name="button">Ok</button>
                         </div>
                     </div>
                 </form>
@@ -148,8 +148,8 @@
                         </div>
                         <div class="col-md-4">
                             <?php 
-                                while ($row = pg_fetch_assoc($result)) {
-                                    echo $row["size"];
+                                // while ($row = pg_fetch_assoc($result)) {
+                                //     echo $row["size"];
                             ?>
                         </div>
                         <div class="col-md-4" style="padding-top: 7px">cm</div>
@@ -160,8 +160,8 @@
                         </div>
                         <div class="col-md-4">
                             <?php 
-                                    echo $row["price"];
-                                }
+                                    // echo $row["price"];
+                                // }
                             ?>
                         </div>
                         <div class="col-md-4" style="padding-top: 7px">€</div>
