@@ -18,23 +18,20 @@
 require_once 'conn.php';
 $single_row = null;
 
-//fetching all available supplier which are not hidden
-$sql = "SELECT * FROM fetch_available_supplier()";
-$supplier_list = pg_query($db, $sql);
-
 // post data to database
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //checking type of form posting; $_POST['submit'] means its called from New Entry form
     if (isset($_POST['submit'])) {
         $in_name = $_POST['in_name'];
-
+        $visibility = $_POST['visiblility'];
+        
         //checking if supplier id is present; if present we have to update the existing; if not insert new supplier
         if (empty($_POST['ingredient_id'])) {
             //calling insert function and returning the sql string
-            $sql = insert_ingredient($in_name);
+            $sql = insert_ingredient($in_name, $visibility);
         } else {
             //calling update function and returning the sql string
-            $sql = update_ingredient($_POST['ingredient_id'], $in_name);
+            $sql = update_ingredient($_POST['ingredient_id'], $in_name, $visibility);
         }
         //performing sql query and returning result
         $result = pg_query($db, $sql);
@@ -62,18 +59,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 //function to insert new ingredient; only making sql query and returning the query as string
-function insert_ingredient($in_name)
-{
-    //checking visiblity and creating query depending on visibility
-    $sql = "SELECT add_ingredient('$in_name')";
+function insert_ingredient($in_name, $visibility) {
+    if($visibility == 1) {
+        //checking visiblity and creating query depending on visibility
+        $sql = "SELECT add_ingredient('$in_name', false)";
+    } else {
+        //checking visiblity and creating query depending on visibility
+        $sql = "SELECT add_ingredient('$in_name', true)";
+    }
+    
     return $sql;
 }
 
 //function to update existing ingredient; only making sql query and returning the query as string
-function update_ingredient($in_id, $in_name)
-{
-    //checking visiblity and creating query depending on visibility
-    $sql = "SELECT update_ingredient('$in_id', '$in_name')";
+function update_ingredient($in_id, $in_name, $visibility) {
+    if($visibility == 1) {
+        //checking visiblity and creating query depending on visibility
+        $sql = "SELECT update_ingredient('$in_id', '$in_name', false)";
+    } else {
+        //checking visiblity and creating query depending on visibility
+        $sql = "SELECT update_ingredient('$in_id', '$in_name', true)";
+    }
     return $sql;
 
 }
@@ -88,9 +94,9 @@ function update_ingredient($in_id, $in_name)
             <form style="float : left" action="ingredient.php" method="post">
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-md-12" style="margin: 10px"><u>
-                                <h3>Ingredient Insertion</h3>
-                            </u></div>
+                        <div class="col-md-12" style="margin: 10px">
+                            <u><h3>Ingredient Insertion</h3></u>
+                        </div>
                         <div class="col-md-4" style="display:none">
                             <input type="hidden" class="form-control" id="ingredient_id" name="ingredient_id"
                                 value="<?php echo $single_row["id"]; ?>">
@@ -104,6 +110,24 @@ function update_ingredient($in_id, $in_name)
                                     value="<?php echo $single_row["name"]; ?>" placeholder="Enter Ingredient Name">
                             </div>
                             <div class="col-md-4"></div>
+                        </div>
+                        <div class="col-md-12" style="margin: 10px">
+                                <div class="col-md-4">
+                                    <label>Visibility</label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input class="form-check-input" type="radio" name="visiblility" id="visiblility" value=1>
+                                    <label class="form-check-label" for="visible">
+                                        Show
+                                    </label>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <input class="form-check-input" type="radio" name="visiblility" id="visiblility" value=0>
+                                    <label class="form-check-label" for="visible">
+                                        Hidden
+                                    </label>
+                                </div>
                         </div>
                         <div class="col-md-12" style="margin: 10px; text-align: center">
                             <button style="margin-left: 40px;" type="submit" class="btn btn-primary"
@@ -127,17 +151,20 @@ echo '<table class="table table-striped">
         <tr>
             <th> <font face="Arial">Id</font> </th>
             <th> <font face="Arial">Name</font> </th>
+            <th> <font face="Arial">Visibility</font> </th>
             <th> <font face="Arial">Action</font> </th>
         </tr>';
 
 $sql = "select * from fetch_all_ingredient()";
 $result = pg_query($db, $sql);
 while ($row = pg_fetch_assoc($result)) {
+    $display = ($row["is_hidden"] == "t") ? 'Hidden' : 'Show';
     ?>
             <form method="post">
                 <tr>
                     <td><?php echo $row["id"]; ?></td>
                     <td><?php echo $row["name"]; ?></td>
+                    <td><?php  echo $display; ?></td>
                     <td><a type="button" class="button btn btn-primary" 
                         href="ingredient_details.php?ing_id=<?php echo $row["id"]; ?>&ing_name=<?php echo $row["name"]; ?>">Manage</a></td>
                     <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
