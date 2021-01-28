@@ -19,10 +19,14 @@ $ing_id = $_GET['ing_id'];
 $ing_name = $_GET['ing_name'];
 
 $single_row = null;
+$supplier_list = []; //create array
 
 //fetching all available supplier which are not hidden
 $sql = "SELECT * FROM fetch_supplier_by_ingredient('$ing_name')";
-$supplier_list = pg_query($db, $sql);
+$query_result = pg_query($db, $sql);
+while($row = pg_fetch_assoc($query_result)) {
+    $supplier_list[] = $row; //assign whole values to array
+}
 
 // post data to database
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -155,13 +159,10 @@ function update_detail($id, $price, $visibility)
                                                                 <div class="col-md-4">
                                                                     <select class="form-control" id="updated_supplier" name="updated_supplier">
                                                                         <option selected="selected" disabled>Choose Supplier</option>
-                                                                        <?php
-                                                                        //fetching all available supplier which are not hidden
-                                                                        $sql = "SELECT * FROM fetch_supplier_by_ingredient('$ing_name')";
-                                                                        $supplier_list = pg_query($db, $sql);                              
+                                                                        <?php                            
                                                                         // Iterating through the supplier array
-                                                                        while ($item = pg_fetch_assoc($supplier_list)){
-                                                                            $selected = ($item["name"] == $single_row["updated_supplier"]) ? "selected" : "";
+                                                                        foreach ($supplier_list as $item) {
+                                                                            $selected = ($item["name"] == $single_row["supplier"]   ) ? "selected" : "";
                                                                             echo '<option value="' .$item["name"]. '"'.$selected.'>' . $item["name"] . '</option>';
                                                                         }
                                                                         ?>
@@ -306,11 +307,11 @@ function update_detail($id, $price, $visibility)
                                 </div>
                                 <div class="col-md-4">
                                     <select class="form-control" id="supplier" name="supplier">
-                                        <option selected="selected" disabled>Choose Supplier</option>
+                                        <option selected="selected" disabled>Pick Supplier</option>
                                         <?php                                    
                                         // Iterating through the supplier array
-                                        while ($item = pg_fetch_assoc($supplier_list)){
-                                            $selected = ($item["name"] == $single_row["supplier"]) ? "selected" : "";
+                                        foreach ($supplier_list as $item) {
+                                            $selected = ($item["name"] == $single_row["supplier"]   ) ? "selected" : "";
                                             echo '<option value="' .$item["name"]. '"'.$selected.'>' . $item["name"] . '</option>';
                                         }
                                         ?>
