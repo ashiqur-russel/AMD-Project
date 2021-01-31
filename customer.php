@@ -10,11 +10,13 @@
 </head>
 
 <body>
-    <?php 
+x<?php 
 include_once './nav/nav.php';
 require_once './conn.php';
 
-$item = [];
+$cart = [];
+$total_ing_price = 0;
+$total_order_price = 0;
 
 $sql = "SELECT * FROM fetch_all_pizza()";
 $pizza_list = pg_query($db, $sql);
@@ -22,14 +24,36 @@ $pizza_list = pg_query($db, $sql);
 $sql = "SELECT * FROM fetch_all_ingredient_detail()";
 $ingredient_list = pg_query($db, $sql);
 
+$json = json_decode(file_get_contents('cart.json'), true);
+
+if(!empty($json)) { 
+    $cart = $json;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    //checking type of form posting; $_POST['submit'] means its called from New Entry form
     if (isset($_POST['submit'])) {
-        $pizza_id = $_POST['id'];
+        $pizza_id = $_POST['pizza_id'];
         $pizza_size = $_POST['pizza_size'.$pizza_id];
         $pizza_price = $_POST['pizza_price'.$pizza_id];
 
-        $item[] = array("name" => $pizza_size, "price" => $pizza_price);
+        $cart_item = array("name" => $pizza_size.' cm Pizza', "price" => $pizza_price);
+        array_push($cart, $cart_item);
+
+        file_put_contents('cart.json', json_encode($cart));
+    }
+
+    if (isset($_POST['add_ingredient'])) {
+        foreach ($_POST['ing_id'] as $ing_id) {
+            $ing_name = $_POST['ing_name'.$ing_id];
+            $ing_province = $_POST['ing_province'.$ing_id];
+            $ing_price = $_POST['ing_price'.$ing_id];
+            
+            $cart_item = array("name" => 'Ing: '.$ing_name.' ('.$ing_province.')', "price" => $ing_price);
+            array_push($cart, $cart_item);
+            $total_ing_price += $ing_price;
+
+            file_put_contents('cart.json', json_encode($cart));
+        }
     }
 }
 ?>
@@ -37,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <form method="POST">
+                <form method="POST" style="margin-bottom: 20px;">
                     <table class="table table-striped">
                         <thead>
                             <th></th>
@@ -48,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <?php
                         while($row = pg_fetch_assoc($pizza_list)){ ?>
                             <tr>
-                                <td><input type="checkbox" class="chk" value="<?php echo $row['id']; ?>" name="id"></td>
+                                <td><input type="checkbox" class="chk" value="<?php echo $row['id']; ?>" name="pizza_id"></td>
                                 <td><input type="hidden" name="<?php echo 'pizza_size'.$row['id']; ?>" value="<?php echo $row['size']; ?>"><?php echo $row['size']; ?></td>
                                 <td><input type="hidden" name="<?php echo 'pizza_price'.$row['id']; ?>" value="<?php echo $row['price']; ?>"><?php echo $row['price']; ?></td>
                             </tr>
@@ -69,14 +93,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <?php
                             while($row = pg_fetch_assoc($ingredient_list)){ ?>
                             <tr>
-                                <td><input type="checkbox" value="<?php echo $row['id']; ?>" name="id[]"></td>
-                                <td><?php echo $row['name']; ?></td>
-                                <td><?php echo $row['province']; ?></td>
-                                <td><?php echo $row['price']; ?></td>
+                                <td><input type="checkbox" value="<?php echo $row['ing_detail_id']; ?>" name="ing_id[]"></td>
+                                <td><input type="hidden" name="<?php echo 'ing_name'.$row['ing_detail_id']; ?>" value="<?php echo $row['name']; ?>"><?php echo $row['name']; ?></td>
+                                <td><input type="hidden" name="<?php echo 'ing_province'.$row['ing_detail_id']; ?>" value="<?php echo $row['province']; ?>"><?php echo $row['province']; ?></td>
+                                <td><input type="hidden" name="<?php echo 'ing_price'.$row['ing_detail_id']; ?>" value="<?php echo $row['price']; ?>"><?php echo $row['price']; ?></td>
                             </tr>
                             <?php } ?>
                         </tbody>
                     </table>
+                    <input type="submit" name="add_ingredient" value="Add to list">
                 </form>
             </div>
             <!-- order list will appear from here -->
@@ -94,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <tbody>
                             <?php
                             $count = 1;
-                            foreach ($item as $row) { ?>
+                            foreach ($cart as $row) { ?>
                             <tr>
                                 <td><?php echo $count; ?></td>
                                 <td><?php echo $row['name']; ?></td>
