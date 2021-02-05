@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <title>Supplier Page</title>
 </head>
@@ -84,13 +85,13 @@ function update_supplier($supplier_id, $supplier_name, $ingredients, $visible)
         <div class="col-md-12">
             <h2 style="text-align: center">Supplier Management</h2>
         </div>
-        <div style=" width:100%; border: 1px solid black; margin-bottom : 10px; float : left">
+        <div class="internal-div">
             <form style="float : left" action="supplier.php" method="post">
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-md-12" style="margin: 10px"><u>
+                        <div class="col-md-12" style="margin: 10px">
                                 <h3>Supplier Insertion</h3>
-                            </u></div>
+                            </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
                                 <label for="supplier_name">Supplier Name</label>
@@ -143,10 +144,10 @@ function update_supplier($supplier_id, $supplier_name, $ingredients, $visible)
             </form>
         </div>
 
-        <div style="height:auto; width:100%; border: 1px solid black; float: left">
-            <div class="col-md-12"><u>
-                    <h3>View Supplier Details</h3>
-                </u></div>
+        <div style="height:auto;" class="internal-div">
+            <div class="col-md-12">
+                    <h3>Supplier Details</h3>
+                </div>
 
 <?php
 echo '<table class="table table-striped">
@@ -171,11 +172,20 @@ while ($row = pg_fetch_assoc($result)) {
                     <td><?php echo $row["id"]; ?></td>
                     <td><?php echo $row["name"]; ?></td>
                     <td><?php echo $row["ingredients"]; ?></td>
-                    <td><?php echo $visibility; ?></td>
+                    <td>
+                        <?php 
+                        if ($visibility == "Show") {
+                            echo "<p class='visible-button'> $visibility </p>"; 
+                        }
+                        else{
+                            echo "<p class='hidden-button'> $visibility </p>";
+                        }
+                        ?>   
+                    </td>
                     <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
                     <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
-                    <td><input type="submit" class="button btn btn-primary" name="update" value="Update" /></td>
-                    <td><input type="submit" class="button btn btn-primary" name="delete" value="Delete" /></td>
+                    <td><input type="submit" class="button btn btn-success" name="update" value="Update" /></td>
+                    <td><input type="submit" class="button btn btn-danger" name="delete" value="Delete" /></td>
                 </tr>
             </form>
             <?php }?>
@@ -191,5 +201,7 @@ while ($row = pg_fetch_assoc($result)) {
     }
     </script>
 </body>
+
+<?php include('footer.php'); ?>
 
 </html>

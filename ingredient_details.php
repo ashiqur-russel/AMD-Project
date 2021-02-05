@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
         <title>View Ingredient Page</title>
@@ -96,12 +97,11 @@ function update_detail($id, $price, $visibility)
 ?>
 
         <div class="container">
-            <div class="col-md-12">
-                <div class="col-md-9" style="float: left"><h2 style="text-align: right; padding-right: 50px">View Ingredient Details List</h2></div>
-                <div class="col-md-3" style="float: left; padding-top: 15px"><button type="button" class="button btn btn-primary" data-toggle="modal" data-target="#myModal">Add Ingredient</button></div>
-            </div>
+            
+            <div class="col-md-12"><h2 style="text-align: center;">Ingredients List Along With Regional Provenance</h2></div>
+            
 
-            <div style="height:auto; width:100%; border: 1px solid black; float: left">
+            <div class="internal-div">
 
                 <table class="table table-striped">
                     <tr>
@@ -111,7 +111,9 @@ function update_detail($id, $price, $visibility)
                         <th> <font face="Arial">Quantity</font> </th>
                         <th> <font face="Arial">Supplier</font> </th>
                         <th> <font face="Arial">Visibility</font> </th>
-                        <th> <font face="Arial">Action</font> </th>
+                        <th> </th>
+                        <th> <font face="Arial">Actions</font> </th>
+                        <th> </th>
                     </tr>
                     <?php
                     $sql = "select * from fetch_ingredient_detail_by_ing_id($ing_id)";
@@ -129,10 +131,10 @@ function update_detail($id, $price, $visibility)
                                 <td><?php  echo $display; ?></td>
                                 <td>
                                     <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
-                                    <input type="submit" class="button btn btn-primary" id="delete" name="delete" value="Delete" />
+                                    <input type="submit" class="button btn btn-danger" id="delete" name="delete" value="Delete" />
                                 </td>
                                 <td>
-                                    <button type="button" class="button btn btn-primary" data-toggle="modal" data-target="#restockModal<?php echo $row["id"]; ?>">Restock</button>
+                                    <button type="button" class="button btn btn-info" data-toggle="modal" data-target="#restockModal<?php echo $row["id"]; ?>">Restock</button>
 
                                     <!-- Modal for Restock ingredient quantity -->
                                     <div id="restockModal<?php echo $row["id"]; ?>" class="modal fade" role="dialog">
@@ -195,7 +197,7 @@ function update_detail($id, $price, $visibility)
                                     </div>
                                 </td>
                                 <td>
-                                    <button type="button" class="button btn btn-primary" data-toggle="modal" data-target="#updateModal<?php echo $row["id"];?>">Update</button>
+                                    <button type="button" class="button btn btn-success" data-toggle="modal" data-target="#updateModal<?php echo $row["id"];?>">Update</button>
 
                                     <!-- Modal for Update ingredient Price, Supplier & Visibility -->
                                     <div id="updateModal<?php echo $row["id"];?>" class="modal fade" role="dialog">
@@ -258,6 +260,8 @@ function update_detail($id, $price, $visibility)
                     <?php }?>
                 </table>
             </div>
+
+            <div class="col-md-12" style="padding-top: 15px; text-align: center;"><button type="button" class="button btn btn-primary" data-toggle="modal" data-target="#myModal">Add Ingredient</button></div>
         </div>
         <!-- Modal for Add ingredient details -->
         <div id="myModal" class="modal fade" role="dialog">
@@ -338,8 +342,8 @@ function update_detail($id, $price, $visibility)
                                 </div>
                             </div>
                             <div class="col-md-12 modal-footer">
-                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Submit</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button style="margin-left: 40px;" type="submit" class="btn btn-primary" name="submit">Add</button>
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
@@ -357,4 +361,8 @@ function update_detail($id, $price, $visibility)
             }
         </script>
     </body>
+
+
+<?php include('footer.php'); ?>
+
 </html>

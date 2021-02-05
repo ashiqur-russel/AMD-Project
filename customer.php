@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <title>Ingredient Page</title>
 </head>
@@ -90,7 +91,10 @@
 
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+             <div class="col-md-12">
+            <h2 style="text-align: center">Order Pizza</h2>
+            </div>
+            <div class="col-md-6 internal-div2">
                 <form method="POST" style="margin-bottom: 20px;">
                     <table class="table table-striped">
                         <thead>
@@ -109,8 +113,10 @@
                             <?php } ?>
                         </tbody>
                     </table>
-                    <br>
-                    <input type="submit" name="submit" value="Submit" onclick="getdata()">
+                    
+                    <input type="submit" name="submit" value="Add to List" onclick="getdata()">
+
+                    <br></br>
 
                     <table class="table table-striped">
                         <thead>
@@ -135,9 +141,9 @@
                 </form>
             </div>
             <!-- order list will appear from here -->
-            <div class="col-md-6">
+            <div class="col-md-6 internal-div2" style="float: right;">
                 <div id=" tbl-header">
-                    <h2 style="color:Black;text-align: center;">Order List</h2>
+                    <h2 style="text-align: center;">Order List</h2>
                 </div>
                 <div id="order-show-table">
                     <form method="POST">
@@ -176,6 +182,7 @@
                             </tfoot>
                         </table>
                         <input type="submit" name="order" style="float: right;" value="Place Order">
+                        <br></br>
                     </form>
                 </div>
                 <h3><?php if ($result != null) echo pg_fetch_result($result, 0); ?></h3>
@@ -193,5 +200,7 @@
     </script>
 
 </body>
+
+<?php include('footer.php'); ?>
 
 </html>

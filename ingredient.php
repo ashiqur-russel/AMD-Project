@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
     <title>Ingredient Page</title>
 </head>
@@ -90,12 +91,12 @@ function update_ingredient($in_id, $in_name, $visibility) {
         <div class="col-md-12">
             <h2 style="text-align: center">Ingredient Management</h2>
         </div>
-        <div style=" width:100%; border: 1px solid black; margin-bottom : 10px; float : left">
+        <div class="internal-div">
             <form style="float : left" action="ingredient.php" method="post">
                 <div class="form-group">
                     <div class="row">
                         <div class="col-md-12" style="margin: 10px">
-                            <u><h3>Ingredient Insertion</h3></u>
+                            <h3>Ingredient Insertion</h3>
                         </div>
                         <div class="col-md-4" style="display:none">
                             <input type="hidden" class="form-control" id="ingredient_id" name="ingredient_id"
@@ -141,10 +142,10 @@ function update_ingredient($in_id, $in_name, $visibility) {
 
         </div>
 
-        <div style="height:auto; width:100%; border: 1px solid black; float: left">
-            <div class="col-md-12"><u>
-                    <h3>View Ingredient Details</h3>
-                </u></div>
+        <div class="internal-div" style="height:auto;">
+            <div class="col-md-12">
+                    <h3>Ingredient Details</h3>
+                </div>
 
             <?php
 echo '<table class="table table-striped">
@@ -152,7 +153,9 @@ echo '<table class="table table-striped">
             <th> <font face="Arial">Id</font> </th>
             <th> <font face="Arial">Name</font> </th>
             <th> <font face="Arial">Visibility</font> </th>
-            <th> <font face="Arial">Action</font> </th>
+            <th> </th>
+            <th> <font face="Arial">Actions</font> </th>
+            <th> </th>
         </tr>';
 
 $sql = "select * from fetch_all_ingredient()";
@@ -164,13 +167,25 @@ while ($row = pg_fetch_assoc($result)) {
                 <tr>
                     <td><?php echo $row["id"]; ?></td>
                     <td><?php echo $row["name"]; ?></td>
-                    <td><?php  echo $display; ?></td>
+                    <td>
+                       
+
+                        <?php 
+                        if ($display == "Show") {
+                            echo "<p class='visible-button'> $display </p>"; 
+                        }
+                        else{
+                            echo "<p class='hidden-button'> $display </p>";
+                        }
+                        ?>  
+                
+                    </td>
                     <td><a type="button" class="button btn btn-primary" 
                         href="ingredient_details.php?ing_id=<?php echo $row["id"]; ?>&ing_name=<?php echo $row["name"]; ?>">Manage</a></td>
                     <input type="hidden" name="btn_update" value="<?php echo $row["id"]; ?>" />
                     <input type="hidden" name="btn_delete" value="<?php echo $row["id"]; ?>" />
-                    <td><input type="submit" class="button btn btn-primary" name="update" value="Update" /></td>
-                    <td><input type="submit" class="button btn btn-primary" name="delete" value="Delete" /></td>
+                    <td><input type="submit" class="button btn btn-success" name="update" value="Update" /></td>
+                    <td><input type="submit" class="button btn btn-danger" name="delete" value="Delete" /></td>
                 </tr>
             </form>
             <?php }?>
@@ -185,5 +200,7 @@ while ($row = pg_fetch_assoc($result)) {
     }
     </script>
 </body>
+
+<?php include('footer.php'); ?>
 
 </html>

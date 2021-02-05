@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <title>Pizza Page</title>
 </head>
@@ -32,14 +33,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="col-md-12">
             <h2 style="text-align: center">Pizza Management</h2>
         </div>
-        <div style=" width:100%; border: 1px solid black; margin-bottom : 10px; float : left">
+        <div class="internal-div">
 
             <form style="float : left" action="pizza.php" method="post">
                 <div class="form-group">
                     <div class="row">
-                        <div class="col-md-12" style="margin: 10px"><u>
+                        <div class="col-md-12" style="margin: 10px">
                                 <h3>Pizza Insertion</h3>
-                            </u></div>
+                            </div>
                         <div class="col-md-12" style="margin: 10px">
                             <div class="col-md-4">
                                 <label for="pizza_size">Pizza Size</label>
@@ -62,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <div class="col-md-12" style="margin: 10px; text-align: center">
                             <button style="margin-left: 40px;" type="submit" class="btn btn-primary"
-                                name="submit">Submit</button>
+                                name="submit">Add</button>
                         </div>
                     </div>
                 </div>
@@ -72,10 +73,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         </div>
 
-        <div style="height:auto; width:100%; border: 1px solid black; float: left">
-            <div class="col-md-12"><u>
-                    <h3>View Pizza Details</h3>
-                </u></div>
+        <div class="internal-div" style="height:auto;">
+            <div class="col-md-12">
+                    <h3>Pizza Details</h3>
+                </div>
             <?php
 
 echo '<table class="table table-striped">
@@ -111,5 +112,7 @@ while ($row = pg_fetch_assoc($result)) {
     </script>
 
 </body>
+
+<?php include('footer.php'); ?>
 
 </html>

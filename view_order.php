@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <title>Order Page</title>
 </head>
@@ -26,7 +27,7 @@
             <h2 style="text-align: center">View Order List</h2>
         </div>
 
-        <div style="height:auto; width:100%; border: 1px solid black; float: left">
+        <div class="internal-div">
 
             <table class="table table-striped">
                 <tr>
@@ -55,5 +56,7 @@
         </div>
     </div>
 </body>
+
+<?php include('footer.php'); ?>
 
 </html>
