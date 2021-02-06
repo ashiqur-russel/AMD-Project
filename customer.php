@@ -131,8 +131,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </form>
             </div>
             <!-- order list will appear from here -->
-            <div class="col-md-6 internal-div2" style="float: right;">
-                <div id=" tbl-header">
+            <div class="col-md-6>
+                <div>
                     <h2 style="text-align: center;">Order List</h2>
                 </div>
                 <div id="order-show-table">
