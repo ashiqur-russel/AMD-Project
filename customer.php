@@ -10,11 +10,15 @@
 </head>
 
 <body>
-x<?php 
+<?php 
 include_once './nav/nav.php';
 require_once './conn.php';
 
 $cart = [];
+$result = null;
+$pizza_size = '';
+$ingredients = '';
+$pizza_price = '';
 $total_ing_price = 0;
 $total_order_price = 0;
 
@@ -33,27 +37,49 @@ if(!empty($json)) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['submit'])) {
         $pizza_id = $_POST['pizza_id'];
-        $pizza_size = $_POST['pizza_size'.$pizza_id];
-        $pizza_price = $_POST['pizza_price'.$pizza_id];
+        $p_size = $_POST['pizza_size' . $pizza_id];
+        $p_price = $_POST['pizza_price' . $pizza_id];
 
-        $cart_item = array("name" => $pizza_size.' cm Pizza', "price" => $pizza_price);
-        array_push($cart, $cart_item);
-
+        $cart_item = array("pizza" => $p_size, "price" => $p_price);
+        $cart[] = $cart_item;
         file_put_contents('cart.json', json_encode($cart));
     }
 
     if (isset($_POST['add_ingredient'])) {
         foreach ($_POST['ing_id'] as $ing_id) {
-            $ing_name = $_POST['ing_name'.$ing_id];
-            $ing_province = $_POST['ing_province'.$ing_id];
-            $ing_price = $_POST['ing_price'.$ing_id];
-            
-            $cart_item = array("name" => 'Ing: '.$ing_name.' ('.$ing_province.')', "price" => $ing_price);
-            array_push($cart, $cart_item);
-            $total_ing_price += $ing_price;
+            $ing_name = $_POST['ing_name' . $ing_id];
+            $ing_province = $_POST['ing_province' . $ing_id];
+            $ing_price = $_POST['ing_price' . $ing_id];
 
+            $cart_item = array("id" => $ing_id, "ing" => $ing_name . ' (' . $ing_province . ')', "price" => $ing_price);
+            array_push($cart, $cart_item);
             file_put_contents('cart.json', json_encode($cart));
         }
+    }
+
+    if (isset($_POST['order'])) {
+        foreach ($cart as $item) {
+            if (!empty($item['pizza'])) {
+                $pizza_size = $item['pizza'];
+                $pizza_price = $item['price'];
+            }
+            if (!empty($item['ing'])) {
+                if ($ingredients != '') $ingredients .= ', ';
+                $ingredients .= $item['ing'];
+                $total_ing_price += $item['price'];
+
+                $ing_id = $item['id'];
+                $sql = "SELECT update_ingredient_quantity($ing_id)";
+                $result = pg_query($db, $sql);
+            }
+        }
+        $total_order_price = $pizza_price + $total_ing_price;
+
+        $sql = "SELECT add_order($pizza_size, '$ingredients', $pizza_price, $total_ing_price, $total_order_price)";
+        $result = pg_query($db, $sql);
+
+        $cart = [];
+        file_put_contents('cart.json', json_encode($cart));
     }
 }
 ?>
@@ -105,29 +131,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </form>
             </div>
             <!-- order list will appear from here -->
-            <div class="col-md-6">
+            <div class="col-md-6 internal-div2" style="float: right;">
                 <div id=" tbl-header">
-                    <h2 style="color:Black;text-align: center;">Order List</h2>
+                    <h2 style="text-align: center;">Order List</h2>
                 </div>
                 <div id="order-show-table">
-                    <table class="table table-striped">
-                        <thead>
-                            <th>#</th>
-                            <th>Item</th>
-                            <th>Price</th>
-                        </thead>
-                        <tbody>
-                            <?php
-                            $count = 1;
-                            foreach ($cart as $row) { ?>
-                            <tr>
-                                <td><?php echo $count; ?></td>
-                                <td><?php echo $row['name']; ?></td>
-                                <td><?php echo $row['price']; ?></td>
-                            </tr>
-                            <?php $count++; } ?>
-                        </tbody>
-                    </table>
+                    <form method="POST">
+                        <table class="table table-striped">
+                            <thead>
+                                <th>#</th>
+                                <th>Item</th>
+                                <th>Price</th>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $t_price = 0;
+                                $count = 1;
+                                foreach ($cart as $row) { ?>
+                                    <tr>
+                                        <td><?php echo $count; ?></td>
+                                        <td>
+                                            <?php
+                                            if (!empty($row['pizza'])) {
+                                                echo $row['pizza'] . ' cm pizza';
+                                            } else {
+                                                echo 'Ing. ' . $row['ing'];
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?php $t_price += $row['price']; echo $row['price']; ?></td>
+                                    </tr>
+                                <?php $count++;
+                                } ?>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2">Total Price</td>
+                                    <td><?php echo $t_price; ?></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <input type="submit" name="order" style="float: right;" value="Place Order">
+                        <br></br>
+                    </form>
                 </div>
             </div>
         </div>
